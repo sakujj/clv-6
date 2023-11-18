@@ -4,6 +4,7 @@ dataSource:
   username: "postgres"
   password: "postgres"
   maximumPoolSize: 5
-cache:
-  type: "LRU"
-  capacity: 100
+dao:
+  cache:
+    type: "LRU"
+    capacity: 100
