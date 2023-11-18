@@ -1,9 +1,13 @@
 package by.sakujj.cache;
 
+import by.sakujj.context.Context;
 import lombok.Getter;
 
 import java.util.Properties;
 
+/**
+ * Configuration parameters for cache created by {@link Context}.
+ */
 @Getter
 public class CacheConfig {
     public enum CacheType{

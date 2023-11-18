@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class DoublyLinkedList<T> {
     private static final String MESSAGE_ON_EMPTY = "DLList is empty";
@@ -66,6 +67,20 @@ public class DoublyLinkedList<T> {
         }
 
         removeNode(tail);
+    }
+
+    public void removeByCondition(Predicate<T> removePredicate) {
+        var curNode = head;
+        while (curNode != null) {
+            if (!removePredicate.test(curNode.value)) {
+                curNode = curNode.next;
+                continue;
+            }
+
+            var nodeToRemove = curNode;
+            curNode = curNode.next;
+            removeNode(nodeToRemove);
+        }
     }
 
     public void removeNode(Node<T> node) {
