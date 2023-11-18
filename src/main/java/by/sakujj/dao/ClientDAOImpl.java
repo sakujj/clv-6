@@ -1,6 +1,5 @@
 package by.sakujj.dao;
 
-import by.sakujj.annotations.Cacheable;
 import by.sakujj.exceptions.DAOException;
 import by.sakujj.model.Client;
 import by.sakujj.dao.util.SQLQueries;
@@ -67,7 +66,6 @@ public class ClientDAOImpl implements ClientDAO {
     );
 
     @Override
-    @Cacheable(daoMethod = Cacheable.DAOMethod.FIND_BY_ID)
     public Optional<Client> findById(UUID id, Connection connection) throws DAOException {
         return ClientDAOImpl.findByAttr(FIND_BY_ID, id, connection).stream().findAny();
     }
@@ -86,7 +84,7 @@ public class ClientDAOImpl implements ClientDAO {
                 all.add(newClient(resultSet));
             }
 
-            log.info("\n" +statement);
+            log.info("\n" + statement);
 
             return all;
 
@@ -96,7 +94,6 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
-    @Cacheable(daoMethod = Cacheable.DAOMethod.SAVE)
     public UUID save(Client obj, Connection connection) throws DAOException {
         try (PreparedStatement statement = connection.prepareStatement(INSERT,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -107,7 +104,7 @@ public class ClientDAOImpl implements ClientDAO {
             ClientDAOImpl.initStatement(statement, obj);
             statement.executeUpdate();
 
-            log.info("\n" +statement);
+            log.info("\n" + statement);
 
             return generatedId;
 
@@ -117,13 +114,12 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
-    @Cacheable(daoMethod = Cacheable.DAOMethod.UPDATE)
     public boolean update(Client obj, Connection connection) throws DAOException {
         try (PreparedStatement statement = connection.prepareStatement(UPDATE_BY_ID)) {
             ClientDAOImpl.initStatementWithoutId(statement, obj);
             statement.setObject(ATTRIBUTES_WITHOUT_ID.size() + 1, obj.getId());
 
-            log.info("\n" +statement);
+            log.info("\n" + statement);
 
             return statement.executeUpdate() > 0;
 
@@ -134,12 +130,11 @@ public class ClientDAOImpl implements ClientDAO {
     }
 
     @Override
-    @Cacheable(daoMethod = Cacheable.DAOMethod.DELETE_BY_ID)
     public boolean deleteById(UUID id, Connection connection) throws DAOException {
         try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
             statement.setObject(1, id);
 
-            log.info("\n" +statement);
+            log.info("\n" + statement);
 
             return statement.executeUpdate() > 0;
 
@@ -191,7 +186,7 @@ public class ClientDAOImpl implements ClientDAO {
                 clients.add(newClient(resultSet));
             }
 
-            log.info("\n" +statement);
+            log.info("\n" + statement);
 
             return clients;
 
