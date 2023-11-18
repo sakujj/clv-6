@@ -43,11 +43,11 @@ public class LRUCacheTests {
         var c1 = testClients.get(0);
         var c2 = testClients.get(1);
         var c3 = testClients.get(2);
+
+        // when
         lruCache.add(c1);
         lruCache.add(c2);
         lruCache.add(c3);
-
-        // when
         var c1Optional = lruCache.getById(c1.getId());
         var c2Optional = lruCache.getById(c2.getId());
         var c3Optional = lruCache.getById(c3.getId());
@@ -74,11 +74,11 @@ public class LRUCacheTests {
         var c1 = testClients.get(0);
         var c2 = testClients.get(1);
         var c3 = testClients.get(2);
+
+        // when
         lruCache.add(c1);
         lruCache.add(c2);
         lruCache.add(c3);
-
-        // when
         var c1Optional = lruCache.getById(c1.getId());
         var c2Optional = lruCache.getById(c2.getId());
         var c3Optional = lruCache.getById(c3.getId());
@@ -104,12 +104,11 @@ public class LRUCacheTests {
         var c2 = testClients.get(1);
         var c3 = testClients.get(2);
 
+        // when
         lruCache.add(c1);
         lruCache.add(c2);
         var tmp = lruCache.getById(c1.getId());
         lruCache.add(c3);
-
-        // when
         var c1Optional = lruCache.getById(c1.getId());
         var c2Optional = lruCache.getById(c2.getId());
         var c3Optional = lruCache.getById(c3.getId());
