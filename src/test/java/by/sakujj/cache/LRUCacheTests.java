@@ -35,6 +35,35 @@ public class LRUCacheTests {
     );
 
     @Test
+    public void shouldUpdate() {
+        // given
+        int size = 3;
+        LRUCache lruCache = new LRUCache(size);
+
+        var c1 = testClients.get(0);
+        var c2 = testClients.get(1);
+        var updatedC1 = testClients.get(2);
+        updatedC1.setId(c1.getId());
+
+        // when
+        lruCache.addOrUpdate(c1);
+        lruCache.addOrUpdate(c2);
+        lruCache.addOrUpdate(updatedC1);
+        var c1Optional = lruCache.getById(c1.getId());
+        var c2Optional = lruCache.getById(c2.getId());
+
+        // then
+        assertThat(lruCache.getSize()).isEqualTo(size - 1);
+
+        assertThat(c1Optional).isPresent();
+        assertThat(c1Optional.get()).isEqualTo(updatedC1);
+
+        assertThat(c2Optional).isPresent();
+        assertThat(c2Optional.get()).isEqualTo(c2);
+
+    }
+
+    @Test
     public void shouldAdd() {
         // given
         int size = 3;
@@ -45,9 +74,9 @@ public class LRUCacheTests {
         var c3 = testClients.get(2);
 
         // when
-        lruCache.add(c1);
-        lruCache.add(c2);
-        lruCache.add(c3);
+        lruCache.addOrUpdate(c1);
+        lruCache.addOrUpdate(c2);
+        lruCache.addOrUpdate(c3);
         var c1Optional = lruCache.getById(c1.getId());
         var c2Optional = lruCache.getById(c2.getId());
         var c3Optional = lruCache.getById(c3.getId());
@@ -76,9 +105,9 @@ public class LRUCacheTests {
         var c3 = testClients.get(2);
 
         // when
-        lruCache.add(c1);
-        lruCache.add(c2);
-        lruCache.add(c3);
+        lruCache.addOrUpdate(c1);
+        lruCache.addOrUpdate(c2);
+        lruCache.addOrUpdate(c3);
         var c1Optional = lruCache.getById(c1.getId());
         var c2Optional = lruCache.getById(c2.getId());
         var c3Optional = lruCache.getById(c3.getId());
@@ -105,10 +134,10 @@ public class LRUCacheTests {
         var c3 = testClients.get(2);
 
         // when
-        lruCache.add(c1);
-        lruCache.add(c2);
+        lruCache.addOrUpdate(c1);
+        lruCache.addOrUpdate(c2);
         var tmp = lruCache.getById(c1.getId());
-        lruCache.add(c3);
+        lruCache.addOrUpdate(c3);
         var c1Optional = lruCache.getById(c1.getId());
         var c2Optional = lruCache.getById(c2.getId());
         var c3Optional = lruCache.getById(c3.getId());
