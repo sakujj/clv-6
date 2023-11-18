@@ -1,5 +1,6 @@
 package by.sakujj.connection;
 
+import by.sakujj.exceptions.DAOException;
 import by.sakujj.util.PropertiesUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -14,10 +15,13 @@ import java.util.Properties;
 
 
 @Slf4j
-public class ConnectionPoolImpl implements ConnectionPool{
+public class ConnectionPoolImpl implements ConnectionPool {
     private final HikariDataSource dataSource;
 
-    public ConnectionPoolImpl(String propertiesFileName){
+    /**
+     * @param propertiesFileName fileName to get configuration properties from
+     */
+    public ConnectionPoolImpl(String propertiesFileName) {
         this.propertiesFileName = propertiesFileName;
         Properties properties = PropertiesUtil.newPropertiesFromYaml("dataSource", propertiesFileName);
         dataSource = newHikariDataSource(properties);
@@ -25,19 +29,29 @@ public class ConnectionPoolImpl implements ConnectionPool{
 
     private final String propertiesFileName;
 
-    @SneakyThrows
     private static HikariDataSource newHikariDataSource(Properties properties) {
         HikariConfig hikariConfig = new HikariConfig(properties);
-        System.out.println(hikariConfig.getDataSourceProperties());
 
         return new HikariDataSource(hikariConfig);
     }
 
+    /**
+     * Gets connection from the pool.
+     *
+     * @return connection from the pool
+     */
     @Override
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    public Connection getConnection() throws DAOException {
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
     }
 
+    /**
+     * Used to close pool when application terminates
+     */
     @Override
     public void close() {
         dataSource.close();
