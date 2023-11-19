@@ -1,7 +1,7 @@
 package unit.cache;
 
 import by.sakujj.cache.Cache;
-import by.sakujj.cache.LRUCache;
+import by.sakujj.cache.LFUCache;
 import by.sakujj.model.Client;
 import org.junit.jupiter.api.Test;
 
@@ -9,14 +9,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LRUCacheTests {
+public class LFUCacheTests {
     private final List<Client> testClients = CacheImplTests.getTestsClients();
 
     @Test
-    public void shouldRemoveImplicitlyLruWithSize2() {
+    public void shouldRemoveImplicitlyLfuWithSize2() {
         // given
         int size = 2;
-        Cache cache = new LRUCache(size);
+        Cache cache = new LFUCache(size);
 
         var c1 = testClients.get(0);
         var c2 = testClients.get(1);
@@ -26,10 +26,10 @@ public class LRUCacheTests {
         cache.addOrUpdate(c1);
         cache.addOrUpdate(c2);
 
-        // LRU is c2, but LFU is c1
+        // LFU is c1, LRU is c2
         var tmp = cache.getById(c2.getId());
-         tmp = cache.getById(c2.getId());
-         tmp = cache.getById(c1.getId());
+        tmp = cache.getById(c2.getId());
+        tmp = cache.getById(c1.getId());
 
         cache.addOrUpdate(c3);
 
@@ -40,15 +40,14 @@ public class LRUCacheTests {
         // then
         assertThat(cache.getSize()).isEqualTo(size);
 
-        assertThat(c2Optional).isEmpty();
+        assertThat(c1Optional).isEmpty();
 
-        assertThat(c1Optional).isPresent();
-        assertThat(c1Optional.get()).isEqualTo(c1);
+        assertThat(c2Optional).isPresent();
+        assertThat(c2Optional.get()).isEqualTo(c2);
 
         assertThat(c3Optional).isPresent();
         assertThat(c3Optional.get()).isEqualTo(c3);
     }
-
 
 
 }
