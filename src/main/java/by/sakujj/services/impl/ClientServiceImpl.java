@@ -22,6 +22,12 @@ public class ClientServiceImpl implements ClientService {
     private final ClientMapper clientMapper;
     private final ConnectionPool connectionPool;
 
+    /**
+     * Used to save a client to DB. ID will be automatically generated.
+     *
+     * @param request {@link ClientRequest} to get the client info
+     * @return {@code id} that was generated for the client
+     */
     public UUID save(ClientRequest request) {
         try (Connection connection = connectionPool.getConnection()) {
             Client client = clientMapper.fromRequest(request);
@@ -31,6 +37,14 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Used to update a client from DB by id, using info from {@link ClientRequest} request.
+     * All fields of the client will be updated, except for {@code id}.
+     *
+     * @param id id
+     * @param request {@link ClientRequest} to get update info
+     * @return {@code true} if deletion was successful, {@code false} otherwise
+     */
     public boolean updateById(UUID id, ClientRequest request) {
         try (Connection connection = connectionPool.getConnection()) {
             if (clientDAO.findById(id, connection).isEmpty()) {
@@ -45,6 +59,11 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Used to retrieve ClientResponses of all present clients.
+     *
+     * @return {@link ClientResponse} list of present clients
+     */
     public List<ClientResponse> findAll() {
         try (Connection connection = connectionPool.getConnection()) {
             return clientDAO.findAll(connection)
@@ -56,6 +75,13 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Used to retrieve ClientResponse by id.
+     *
+     * @param id id
+     * @return Optional with {@link ClientResponse} if client with id is present,
+     * {@code Optional.empty()} otherwise
+     */
     public Optional<ClientResponse> findById(UUID id) {
         try (Connection connection = connectionPool.getConnection()) {
             return clientDAO.findById(id, connection)
@@ -65,6 +91,13 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Used to retrieve ClientResponse by email.
+     *
+     * @param email email
+     * @return Optional with {@link ClientResponse} if client with email is present,
+     * {@code Optional.empty()} otherwise
+     */
     public Optional<ClientResponse> findByEmail(String email) {
         try (Connection connection = connectionPool.getConnection()) {
             return clientDAO.findByEmail(email, connection)
@@ -74,6 +107,12 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Used to delete Client from DB by id.
+     *
+     * @param id id
+     * @return {@code true} if deletion was successful, {@code false} otherwise
+     */
     public boolean deleteById(UUID id) {
         try (Connection connection = connectionPool.getConnection()) {
             if (clientDAO.findById(id, connection).isEmpty()) {
