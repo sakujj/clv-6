@@ -1,9 +1,9 @@
 package by.sakujj.dao;
 
 import by.sakujj.annotations.Cacheable;
+import by.sakujj.dao.util.SQLQueries;
 import by.sakujj.exceptions.DAOException;
 import by.sakujj.model.Client;
-import by.sakujj.dao.util.SQLQueries;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -86,7 +86,7 @@ public class ClientDAOImpl implements ClientDAO {
                 all.add(newClient(resultSet));
             }
 
-            log.info("\n" + statement);
+            log.info("{}\n--------------------------------", statement);
 
             return all;
 
@@ -107,7 +107,7 @@ public class ClientDAOImpl implements ClientDAO {
             ClientDAOImpl.initStatement(statement, obj);
             statement.executeUpdate();
 
-            log.info("\n" + statement);
+            log.info("{}\n--------------------------------", statement);
 
             return generatedId;
 
@@ -123,7 +123,7 @@ public class ClientDAOImpl implements ClientDAO {
             ClientDAOImpl.initStatementWithoutId(statement, obj);
             statement.setObject(ATTRIBUTES_WITHOUT_ID.size() + 1, obj.getId());
 
-            log.info("\n" + statement);
+            log.info("{}\n--------------------------------", statement);
 
             return statement.executeUpdate() > 0;
 
@@ -139,7 +139,7 @@ public class ClientDAOImpl implements ClientDAO {
         try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
             statement.setObject(1, id);
 
-            log.info("\n" + statement);
+            log.info("{}\n--------------------------------", statement);
 
             return statement.executeUpdate() > 0;
 
@@ -191,7 +191,7 @@ public class ClientDAOImpl implements ClientDAO {
                 clients.add(newClient(resultSet));
             }
 
-            log.info("\n" + statement);
+            log.info("{}\n--------------------------------", statement);
 
             return clients;
 
