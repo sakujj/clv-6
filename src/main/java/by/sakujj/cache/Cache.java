@@ -10,4 +10,6 @@ public interface Cache {
     Optional<Entity<?, ?>> getById(Object id);
     void removeById(Object id);
 
+    int getSize();
+
 }

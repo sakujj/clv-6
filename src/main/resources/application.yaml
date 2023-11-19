@@ -6,5 +6,5 @@ dataSource:
   maximumPoolSize: 5
 dao:
   cache:
-    type: "LRU"
+    type: "LFU"
     capacity: 100
