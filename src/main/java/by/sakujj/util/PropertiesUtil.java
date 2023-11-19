@@ -5,9 +5,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Properties;
 
 @UtilityClass
 public class PropertiesUtil {
@@ -25,8 +24,6 @@ public class PropertiesUtil {
                     propertiesMap = (Map<Object, Object>) propertiesMap.get(p);
                 }
             }
-
-
 
             Properties properties = new Properties();
             properties.putAll(propertiesMap);

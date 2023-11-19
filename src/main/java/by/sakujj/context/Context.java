@@ -1,4 +1,4 @@
-package util.context;
+package by.sakujj.context;
 
 import by.sakujj.cache.Cache;
 import by.sakujj.cache.CacheConfig;
@@ -13,6 +13,7 @@ import by.sakujj.hashing.Hasher;
 import by.sakujj.mappers.ClientMapper;
 import by.sakujj.proxy.DynamicProxyCreator;
 import by.sakujj.services.ClientService;
+import by.sakujj.services.impl.ClientServiceImpl;
 import by.sakujj.util.PropertiesUtil;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -91,7 +92,7 @@ public class Context implements AutoCloseable {
     }
 
     private void putServices() {
-        ClientService clientService = new ClientService(
+        ClientService clientService = new ClientServiceImpl(
                 getByClass(ClientDAO.class),
                 getByClass(ClientMapper.class),
                 getByClass(ConnectionPool.class));
@@ -100,6 +101,7 @@ public class Context implements AutoCloseable {
 
     private void putMappers() {
         ClientMapper clientMapper = Mappers.getMapper(ClientMapper.class);
+        clientMapper.setHasher(getByClass(Hasher.class));
         putInstanceOf(ClientMapper.class, clientMapper);
     }
 

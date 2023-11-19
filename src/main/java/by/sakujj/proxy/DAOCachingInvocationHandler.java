@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class DAOCachingInvocationHandler<T> implements InvocationHandler {
-
     private final T target;
     private final Class<?> targetClass;
     private final Cache cache;
@@ -22,19 +21,23 @@ public class DAOCachingInvocationHandler<T> implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Method targetMethod = getOverriddenMethod(method);
-        Optional<Cacheable> optionalAnnotation = getCacheableAnnotation(targetMethod);
-        if (optionalAnnotation.isEmpty()) {
-            return method.invoke(target, args);
-        }
+        try {
+            Method targetMethod = getOverriddenMethod(method);
+            Optional<Cacheable> optionalAnnotation = getCacheableAnnotation(targetMethod);
+            if (optionalAnnotation.isEmpty()) {
+                return method.invoke(target, args);
+            }
 
-        Cacheable annotation = optionalAnnotation.get();
-        return switch (annotation.daoMethod()) {
-            case FIND_BY_ID -> proxyFindById(method, args);
-            case UPDATE -> proxyUpdateById(method, args);
-            case DELETE_BY_ID -> proxyDeleteById(method, args);
-            case SAVE -> proxySave(method, args);
-        };
+            Cacheable annotation = optionalAnnotation.get();
+            return switch (annotation.daoMethod()) {
+                case FIND_BY_ID -> proxyFindById(method, args);
+                case UPDATE -> proxyUpdateById(method, args);
+                case DELETE_BY_ID -> proxyDeleteById(method, args);
+                case SAVE -> proxySave(method, args);
+            };
+        } catch (Throwable t) {
+            throw t.getCause();
+        }
     }
 
 

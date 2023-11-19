@@ -12,12 +12,11 @@ import org.mapstruct.Mapper;
 public abstract class ClientMapper {
     private Hasher hasher;
 
-    public Client fromRequest(ClientRequest clientRequest) {
-        String email = clientRequest.getEmail();
-        String username = clientRequest.getUsername();
-        String notHashedPassword = clientRequest.getNotHashedPassword();
-        String password = hasher.hash(notHashedPassword);
-        Integer age =clientRequest.getAge();
+    public Client fromRequest(ClientRequest request) {
+        String email = request.getEmail();
+        String username = request.getUsername();
+        String password = hasher.hash( request.getNotHashedPassword());
+        Integer age = request.getAge();
 
         return Client.builder()
                 .email(email)
