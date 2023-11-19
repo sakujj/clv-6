@@ -4,14 +4,12 @@ import by.sakujj.exceptions.DAOException;
 import by.sakujj.util.PropertiesUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-;
 
 
 @Slf4j
