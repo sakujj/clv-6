@@ -1,10 +1,10 @@
 dataSource:
   driverClassName: "org.postgresql.Driver"
-  jdbcUrl: "jdbc:postgresql://localhost:5432/sakujj_db"
+  jdbcUrl: "jdbc:postgresql://localhost:5433/sakujj_db_test"
   username: "postgres"
   password: "postgres"
   maximumPoolSize: 5
 dao:
   cache:
-    type: "LFU"
-    capacity: 100
+    type: "NONE"
+    capacity: 0

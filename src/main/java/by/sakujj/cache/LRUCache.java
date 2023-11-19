@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.PriorityQueue;
 
 /**
  * LRU cache implementation
@@ -41,6 +40,10 @@ public class LRUCache implements Cache {
      * @param entity instance to add or update
      */
     public synchronized void addOrUpdate(Entity<?, ?> entity) {
+        if (capacity == 0) {
+            return;
+        }
+
         if (entities.getSize() == capacity) {
             var lruEntity = entities.getLast();
             Object lruId = lruEntity.getId();
