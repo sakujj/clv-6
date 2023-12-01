@@ -1,6 +1,6 @@
 package by.sakujj.connection;
 
-import by.sakujj.exceptions.DAOException;
+import by.sakujj.exceptions.ConnectionPoolException;
 import by.sakujj.util.PropertiesUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -39,11 +39,11 @@ public class ConnectionPoolImpl implements ConnectionPool {
      * @return connection from the pool
      */
     @Override
-    public Connection getConnection() throws DAOException {
+    public Connection getConnection() {
         try {
             return dataSource.getConnection();
         } catch (SQLException e) {
-            throw new DAOException(e);
+            throw new ConnectionPoolException(e);
         }
     }
 

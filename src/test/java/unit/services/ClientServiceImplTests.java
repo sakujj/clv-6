@@ -4,6 +4,7 @@ import by.sakujj.connection.ConnectionPool;
 import by.sakujj.dao.ClientDAO;
 import by.sakujj.dto.ClientRequest;
 import by.sakujj.dto.ClientResponse;
+import by.sakujj.exceptions.ConnectionPoolException;
 import by.sakujj.exceptions.DAOException;
 import by.sakujj.mappers.ClientMapper;
 import by.sakujj.model.Client;
@@ -50,7 +51,7 @@ public class ClientServiceImplTests {
     @DisplayName("findById (UUID)")
     public class findById {
         @Test
-        void shouldReturnCorrectResponse() throws DAOException {
+        void shouldReturnCorrectResponse() {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             Client expectedClient = aClient.build();
@@ -73,7 +74,7 @@ public class ClientServiceImplTests {
 
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool()  {
             // given
             UUID id = ClientTestBuilder.aClient().getId();
 
@@ -83,11 +84,11 @@ public class ClientServiceImplTests {
 
             // then
             assertThatThrownBy(() -> clientServiceImpl.findById(id))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO()  {
             // given
             UUID id = ClientTestBuilder.aClient().getId();
 
@@ -98,11 +99,11 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.findById(id))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws DAOException, SQLException {
+        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws SQLException {
             // given
             doThrow(SQLException.class).when(connection).close();
             Mockito.when(connectionPool.getConnection())
@@ -110,7 +111,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.findById(ClientTestBuilder.aClient().getId()))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(ConnectionPoolException.class);
         }
     }
 
@@ -118,7 +119,7 @@ public class ClientServiceImplTests {
     @DisplayName("findByEmail (String)")
     public class findByEmail {
         @Test
-        void shouldReturnCorrectResponse() throws DAOException {
+        void shouldReturnCorrectResponse()  {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             Optional<ClientResponse> expected = Optional.of(aClient.buildResponse());
@@ -139,7 +140,7 @@ public class ClientServiceImplTests {
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool()  {
             // given
             String email = ClientTestBuilder.aClient().getEmail();
 
@@ -149,11 +150,11 @@ public class ClientServiceImplTests {
 
             // then
             assertThatThrownBy(() -> clientServiceImpl.findByEmail(email))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO()  {
             // given
             String email = ClientTestBuilder.aClient().getEmail();
 
@@ -164,11 +165,11 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.findByEmail(email))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws DAOException, SQLException {
+        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws SQLException {
             // given
             doThrow(SQLException.class).when(connection).close();
             Mockito.when(connectionPool.getConnection())
@@ -176,7 +177,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.findByEmail(ClientTestBuilder.aClient().getEmail()))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(ConnectionPoolException.class);
         }
     }
 
@@ -184,7 +185,7 @@ public class ClientServiceImplTests {
     @DisplayName("findAll ()")
     public class findAll {
         @Test
-        void shouldReturnAllBanks() throws DAOException {
+        void shouldReturnAllBanks()  {
             // given
             ClientTestBuilder aClient1 = ClientTestBuilder.aClient();
             ClientTestBuilder aClient2 = ClientTestBuilder.aClient()
@@ -227,18 +228,18 @@ public class ClientServiceImplTests {
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool()  {
             // given
             Mockito.when(connectionPool.getConnection())
                     .thenThrow(new DAOException());
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.findAll())
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO()  {
             // given
             Mockito.when(connectionPool.getConnection())
                     .thenReturn(connection);
@@ -247,11 +248,11 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.findAll())
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws DAOException, SQLException {
+        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws SQLException {
             // given
             doThrow(SQLException.class).when(connection).close();
             Mockito.when(connectionPool.getConnection())
@@ -259,7 +260,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.findAll())
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(ConnectionPoolException.class);
         }
     }
 
@@ -267,7 +268,7 @@ public class ClientServiceImplTests {
     @DisplayName("save (ClientRequest)")
     public class save {
         @Test
-        void shouldSave() throws DAOException {
+        void shouldSave()  {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             ClientRequest clientRequest = aClient.buildRequest();
@@ -289,18 +290,18 @@ public class ClientServiceImplTests {
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool()  {
             // given
             Mockito.when(connectionPool.getConnection())
                     .thenThrow(new DAOException());
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.save(ClientRequest.builder().build()))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO()  {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             Client client = aClient.build();
@@ -315,11 +316,11 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.save(clientRequest))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws DAOException, SQLException {
+        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws SQLException {
             // given
             doThrow(SQLException.class).when(connection).close();
             Mockito.when(connectionPool.getConnection())
@@ -327,7 +328,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.save(ClientTestBuilder.aClient().buildRequest()))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(ConnectionPoolException.class);
         }
     }
 
@@ -335,7 +336,7 @@ public class ClientServiceImplTests {
     @DisplayName("update (ClientRequest)")
     public class update {
         @Test
-        void shouldUpdate() throws DAOException {
+        void shouldUpdate()  {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             ClientRequest clientRequest = aClient.buildRequest();
@@ -360,7 +361,7 @@ public class ClientServiceImplTests {
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool()  {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             Mockito.when(connectionPool.getConnection())
@@ -368,11 +369,11 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.updateById(aClient.getId(), aClient.buildRequest()))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO()  {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             Client client = aClient.build();
@@ -389,11 +390,11 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.updateById(client.getId(),clientRequest))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws DAOException, SQLException {
+        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws SQLException {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             doThrow(SQLException.class).when(connection).close();
@@ -402,7 +403,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.updateById(aClient.getId(), aClient.buildRequest()))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(ConnectionPoolException.class);
         }
     }
 
@@ -410,7 +411,7 @@ public class ClientServiceImplTests {
     @DisplayName("deleteById (UUID)")
     public class deleteById {
         @Test
-        void shouldReturnCorrectResponse() throws DAOException {
+        void shouldReturnCorrectResponse()  {
             // given
             ClientTestBuilder aClient = ClientTestBuilder.aClient();
             Client client = aClient.build();
@@ -433,7 +434,7 @@ public class ClientServiceImplTests {
 
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromConnectionPool()  {
             // given
             UUID id = ClientTestBuilder.aClient().getId();
 
@@ -443,11 +444,11 @@ public class ClientServiceImplTests {
 
             // then
             assertThatThrownBy(() -> clientServiceImpl.deleteById(id))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO() throws DAOException {
+        void shouldThrowRuntimeExceptionOnDAOExceptionFromDAO()  {
             // given
             Client aClient = ClientTestBuilder.aClient().build();
             UUID id = aClient.getId();
@@ -461,11 +462,11 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.deleteById(id))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(DAOException.class);
         }
 
         @Test
-        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws DAOException, SQLException {
+        void shouldThrowRuntimeExceptionOnSQLExceptionFromClosingConnection() throws SQLException {
             // given
             doThrow(SQLException.class).when(connection).close();
             Mockito.when(connectionPool.getConnection())
@@ -473,7 +474,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.deleteById(ClientTestBuilder.aClient().getId()))
-                    .isInstanceOf(RuntimeException.class);
+                    .isInstanceOf(ConnectionPoolException.class);
         }
     }
 
