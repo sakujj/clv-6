@@ -1,6 +1,8 @@
 package by.sakujj.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +18,7 @@ public class ClientRequest {
     private String username;
 
     @Length(max = 40)
-    @Pattern(regexp = "[a-zA-Z]{3,}@[a-zA-Z]+\\.[a-zA-Z]+")
+    @Pattern(regexp = "[a-zA-Z0-9]{3,}@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+")
     private String email;
 
     @Pattern(regexp = "\\S{4,60}")

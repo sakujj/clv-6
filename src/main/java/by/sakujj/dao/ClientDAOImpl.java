@@ -68,16 +68,16 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     @Cacheable(daoMethod = Cacheable.DAOMethod.FIND_BY_ID)
-    public Optional<Client> findById(UUID id, Connection connection) throws DAOException {
+    public Optional<Client> findById(UUID id, Connection connection){
         return ClientDAOImpl.findByAttr(FIND_BY_ID, id, connection).stream().findAny();
     }
 
-    public Optional<Client> findByEmail(String email, Connection connection) throws DAOException {
+    public Optional<Client> findByEmail(String email, Connection connection){
         return ClientDAOImpl.findByAttr(FIND_BY_EMAIL, email, connection).stream().findAny();
     }
 
     @Override
-    public List<Client> findAll(Connection connection) throws DAOException {
+    public List<Client> findAll(Connection connection) {
         try (PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
             ResultSet resultSet = statement.executeQuery();
 
@@ -97,7 +97,7 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     @Cacheable(daoMethod = Cacheable.DAOMethod.SAVE)
-    public UUID save(Client obj, Connection connection) throws DAOException {
+    public UUID save(Client obj, Connection connection) {
         try (PreparedStatement statement = connection.prepareStatement(INSERT,
                 Statement.RETURN_GENERATED_KEYS)) {
 
@@ -118,7 +118,7 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     @Cacheable(daoMethod = Cacheable.DAOMethod.UPDATE)
-    public boolean update(Client obj, Connection connection) throws DAOException {
+    public boolean update(Client obj, Connection connection) {
         try (PreparedStatement statement = connection.prepareStatement(UPDATE_BY_ID)) {
             ClientDAOImpl.initStatementWithoutId(statement, obj);
             statement.setObject(ATTRIBUTES_WITHOUT_ID.size() + 1, obj.getId());
@@ -135,7 +135,7 @@ public class ClientDAOImpl implements ClientDAO {
 
     @Override
     @Cacheable(daoMethod = Cacheable.DAOMethod.DELETE_BY_ID)
-    public boolean deleteById(UUID id, Connection connection) throws DAOException {
+    public boolean deleteById(UUID id, Connection connection) {
         try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
             statement.setObject(1, id);
 
@@ -181,7 +181,7 @@ public class ClientDAOImpl implements ClientDAO {
 
     private static <T> List<Client> findByAttr(String queryToFindBy,
                                                T attr,
-                                               Connection connection) throws DAOException {
+                                               Connection connection) {
         try (PreparedStatement statement = connection.prepareStatement(queryToFindBy)) {
             statement.setObject(1, attr);
             ResultSet resultSet = statement.executeQuery();

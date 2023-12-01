@@ -3,6 +3,8 @@ package by.sakujj;
 import by.sakujj.context.Context;
 import by.sakujj.dto.ClientRequest;
 import by.sakujj.dto.ClientResponse;
+import by.sakujj.pdf.ClientServiceDecoratedWithReportPDFPrinter;
+import by.sakujj.pdf.ReportPDFConfig;
 import by.sakujj.services.ClientService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,27 +21,35 @@ public class Main {
     public static void main(String[] args) throws Exception {
         try (Context ctx = new Context()) {
 
-            System.out.println(
-                    findById(UUID.fromString("99c0ae88-7acd-4cda-9d59-50e09eede81f"),
-                            ctx)
-            );
+            ClientService clientService = ctx.getByClass(ClientService.class);
+            ClientServiceDecoratedWithReportPDFPrinter clientServiceDecoratedWithReportPdfPrinter = new ClientServiceDecoratedWithReportPDFPrinter(clientService,
+                    new ReportPDFConfig(
+                            "pdf-resources/fonts/Hack-Bold.ttf",
+                            "pdf-resources/fonts/Hack-Regular.ttf"
+                    ).setLeftMarginToWidthRatio(1 / 8f)
+                            .setRightMarginToWidthRatio(1 / 8f)
+                            .setTopMarginToHeightRatio(1 / 6f)
+                            .setBottomMarginToHeightRatio(1 / 8f),
+                    "pdf-resources/Clevertec_Template.pdf",
+                    "pdf-output");
+
 
             System.out.println(
                     findById(UUID.fromString("99c0ae88-7acd-4cda-9d59-50e09eede81f"),
-                            ctx)
+                            clientServiceDecoratedWithReportPdfPrinter)
             );
 
 //            System.out.println(
 //                    validateThenSave("""
 //                            {
 //                                "username": "user123",
-//                                "email": "emailgmail.com",
+//                                "email": "q3234x@lgma32il.c3om",
 //                                "notHashedPassword": "1111",
 //                                "age": 23
 //                            }
-//                            """, ctx)
+//                            """, clientServiceDecoratedWithReportPdfPrinter, ctx)
 //            );
-
+//
 //            System.out.println(
 //                    validateThenUpdate(
 //                            UUID.fromString("0673979e-3456-4516-a4c9-f9187c471b1b"),
@@ -51,26 +61,25 @@ public class Main {
 //                                         "age": 45
 //                                    }
 //                                    """
-//                            , ctx)
+//                            , clientServiceDecoratedWithReportPdfPrinter, ctx)
 //            );
 //            System.out.println("\t\t\t(!)(!)(!)");
-
+//
 //            System.out.println(
 //                    deleteById(
 //                            UUID.fromString("0673979e-3456-4516-a4c9-f9187c471b1b"),
-//                            ctx)
+//                            clientServiceDecoratedWithReportPdfPrinter)
 //            );
 //            System.out.println("\t\t\t(!)(!)(!)");
-
+//
             System.out.println(
-                    findAll(ctx)
+                    findAll(clientServiceDecoratedWithReportPdfPrinter)
             );
 
         }
     }
 
-    public static String findById(UUID id, Context ctx) {
-        ClientService service = ctx.getByClass(ClientService.class);
+    public static String findById(UUID id, ClientService service) {
 
         var found = service.findById(id);
         if (found.isEmpty()) {
@@ -83,9 +92,7 @@ public class Main {
         return gson.toJson(found.get(), ClientResponse.class);
     }
 
-    public static String findAll(Context ctx) {
-        ClientService service = ctx.getByClass(ClientService.class);
-
+    public static String findAll(ClientService service) {
         var foundList = service.findAll();
 
         Gson gson = new GsonBuilder()
@@ -93,13 +100,13 @@ public class Main {
                 .create();
         return gson.toJson(
                 foundList,
-                new TypeToken<List<ClientResponse>>() {}.getType()
+                new TypeToken<List<ClientResponse>>() {
+                }.getType()
         );
     }
 
-    public static String validateThenSave(String jsonRequest, Context ctx) {
+    public static String validateThenSave(String jsonRequest, ClientService service, Context ctx) {
         Validator validator = ctx.getByClass(Validator.class);
-        ClientService service = ctx.getByClass(ClientService.class);
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
@@ -108,10 +115,11 @@ public class Main {
         Set<ConstraintViolation<ClientRequest>> violations = validator.validate(clientRequest);
         if (!violations.isEmpty()) {
             return gson.toJson(violations
-                    .stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.toSet()),
-                    new TypeToken<Set<String>>() {}.getType()
+                            .stream()
+                            .map(ConstraintViolation::getMessage)
+                            .collect(Collectors.toSet()),
+                    new TypeToken<Set<String>>() {
+                    }.getType()
 
             );
         }
@@ -121,21 +129,21 @@ public class Main {
         return gson.toJson(id, UUID.class);
     }
 
-    public static String validateThenUpdate(UUID id, String jsonRequest, Context ctx) {
+    public static String validateThenUpdate(UUID id, String jsonRequest, ClientService service, Context ctx) {
         Validator validator = ctx.getByClass(Validator.class);
-        ClientService service = ctx.getByClass(ClientService.class);
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
 
         ClientRequest clientRequest = gson.fromJson(jsonRequest, ClientRequest.class);
-        var violations =  validator.validate(clientRequest);
+        var violations = validator.validate(clientRequest);
         if (!violations.isEmpty()) {
             return gson.toJson(violations
                             .stream()
                             .map(ConstraintViolation::getMessage)
                             .collect(Collectors.toSet()),
-                    new TypeToken<Set<String>>() {}.getType()
+                    new TypeToken<Set<String>>() {
+                    }.getType()
 
             );
         }
@@ -145,9 +153,7 @@ public class Main {
         return gson.toJson(isUpdated, Boolean.class);
     }
 
-    public static String deleteById(UUID id, Context ctx) {
-        ClientService service = ctx.getByClass(ClientService.class);
-
+    public static String deleteById(UUID id, ClientService service) {
         boolean isDeleted = service.deleteById(id);
 
         Gson gson = new GsonBuilder()

@@ -4,7 +4,7 @@ import by.sakujj.connection.ConnectionPool;
 import by.sakujj.dao.ClientDAO;
 import by.sakujj.dto.ClientRequest;
 import by.sakujj.dto.ClientResponse;
-import by.sakujj.exceptions.DAOException;
+import by.sakujj.exceptions.ConnectionPoolException;
 import by.sakujj.mappers.ClientMapper;
 import by.sakujj.model.Client;
 import by.sakujj.services.ClientService;
@@ -32,8 +32,8 @@ public class ClientServiceImpl implements ClientService {
         try (Connection connection = connectionPool.getConnection()) {
             Client client = clientMapper.fromRequest(request);
             return clientDAO.save(client, connection);
-        } catch (DAOException | SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new ConnectionPoolException(e);
         }
     }
 
@@ -54,8 +54,8 @@ public class ClientServiceImpl implements ClientService {
             Client client = clientMapper.fromRequest(request);
             client.setId(id);
             return clientDAO.update(client, connection);
-        } catch (DAOException | SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new ConnectionPoolException(e);
         }
     }
 
@@ -70,8 +70,8 @@ public class ClientServiceImpl implements ClientService {
                     .stream()
                     .map(clientMapper::toResponse)
                     .toList();
-        } catch (DAOException | SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new ConnectionPoolException(e);
         }
     }
 
@@ -86,8 +86,8 @@ public class ClientServiceImpl implements ClientService {
         try (Connection connection = connectionPool.getConnection()) {
             return clientDAO.findById(id, connection)
                     .map(clientMapper::toResponse);
-        } catch (DAOException | SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new ConnectionPoolException(e);
         }
     }
 
@@ -102,8 +102,8 @@ public class ClientServiceImpl implements ClientService {
         try (Connection connection = connectionPool.getConnection()) {
             return clientDAO.findByEmail(email, connection)
                     .map(clientMapper::toResponse);
-        } catch (DAOException | SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new ConnectionPoolException(e);
         }
     }
 
@@ -120,8 +120,8 @@ public class ClientServiceImpl implements ClientService {
             }
 
             return clientDAO.deleteById(id, connection);
-        } catch (DAOException | SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new ConnectionPoolException(e);
         }
     }
 }
