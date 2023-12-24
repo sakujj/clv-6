@@ -1,5 +1,9 @@
-CREATE TABLE
-    Client
+DROP SCHEMA IF EXISTS myschema CASCADE;
+
+CREATE SCHEMA myschema;
+
+CREATE TABLE IF NOT EXISTS
+    myschema.Client
 (
     client_id UUID               NOT NULL,
     username  VARCHAR(50)        NOT NULL,

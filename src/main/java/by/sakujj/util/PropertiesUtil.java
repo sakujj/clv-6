@@ -11,11 +11,9 @@ import java.util.Properties;
 @UtilityClass
 public class PropertiesUtil {
 
-    public static Properties newPropertiesFromYaml(String prefix, String filename) {
+    public static Properties newPropertiesFromYaml(String prefix, String filename, ClassLoader propertyLoader) {
         Yaml yaml = new Yaml();
-        try (InputStream inputStream = ClassLoader
-                .getSystemClassLoader()
-                .getResourceAsStream(filename)) {
+        try (InputStream inputStream = propertyLoader.getResourceAsStream(filename)) {
 
             Map<Object, Object> propertiesMap = yaml.load(inputStream);
             if (!prefix.isEmpty()) {
@@ -34,8 +32,8 @@ public class PropertiesUtil {
         }
     }
 
-    public static Properties newProperties(String filename) {
-        try(InputStream inputStream = PropertiesUtil.class.getClassLoader().getResourceAsStream(filename)){
+    public static Properties newProperties(String filename, ClassLoader propertyLoader) {
+        try(InputStream inputStream = propertyLoader.getResourceAsStream(filename)){
             Properties properties = new Properties();
             properties.load(inputStream);
             return properties;

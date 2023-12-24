@@ -20,7 +20,8 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClientDAOImpl implements ClientDAO {
 
-    private static final String TABLE_NAME = "Client";
+    private static final String SCHEMA_NAME = "myschema";
+    private static final String TABLE_NAME = SCHEMA_NAME + "." + "Client";
     private static final String ID_COLUMN_NAME = "client_id";
 
     private static final List<String> ATTRIBUTES = List.of(
@@ -89,6 +90,28 @@ public class ClientDAOImpl implements ClientDAO {
             log.info("{}\n--------------------------------", statement);
 
             return all;
+
+        } catch (SQLException e) {
+            throw new DAOException(e);
+        }
+    }
+
+    @Override
+    public List<Client> findByPageWithSize(int page, int size, Connection connection) {
+        try (PreparedStatement statement = connection.prepareStatement("""
+                SELECT * FROM %s LIMIT %s OFFSET %s;
+                """.formatted(TABLE_NAME, String.valueOf(size), String.valueOf((page - 1)* size)))) {
+
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Client> selected = new ArrayList<>();
+            while (resultSet.next()) {
+                selected.add(newClient(resultSet));
+            }
+
+            log.info("{}\n--------------------------------", statement);
+
+            return selected;
 
         } catch (SQLException e) {
             throw new DAOException(e);

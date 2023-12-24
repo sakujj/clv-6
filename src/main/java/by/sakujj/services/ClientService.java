@@ -14,6 +14,8 @@ public interface ClientService {
 
     List<ClientResponse> findAll();
 
+    List<ClientResponse> findByPageWithSize(int page, int size);
+
     Optional<ClientResponse> findById(UUID id);
 
     Optional<ClientResponse> findByEmail(String email);

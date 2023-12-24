@@ -1,9 +1,13 @@
 dataSource:
-  driverClassName: "org.postgresql.Driver"
-  jdbcUrl: "jdbc:postgresql://localhost:5433/sakujj_db_test"
-  username: "postgres"
-  password: "postgres"
-  maximumPoolSize: 5
+  hikari:
+    driverClassName: "org.postgresql.Driver"
+    jdbcUrl: "jdbc:postgresql://localhost:5433/sakujj_db_test"
+    username: "postgres"
+    password: "postgres"
+    maximumPoolSize: 5
+  executeOnStartUp:
+    - "database-init/ddl.sql"
+    - "database-init/dml.sql"
 dao:
   cache:
     type: "NONE"

@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Getter
 @Setter
-public class ReportPDFConfig {
+public class ReportConfig {
         private final String boldFontPath;
         private final String plainFontPath;
 

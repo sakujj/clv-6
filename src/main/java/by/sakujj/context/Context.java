@@ -15,14 +15,20 @@ import by.sakujj.proxy.DynamicProxyCreator;
 import by.sakujj.services.ClientService;
 import by.sakujj.services.impl.ClientServiceImpl;
 import by.sakujj.util.PropertiesUtil;
+import by.sakujj.util.SQLScriptRunner;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.sql.Connection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A context to get application classes instances from.
@@ -34,19 +40,38 @@ public class Context implements AutoCloseable {
     private static final String DEFAULT_PROPERTIES_FILE_NAME = "application.yaml";
     private final String propertiesFileName;
 
-    public Context(String propertiesFileName) {
+    private static String singletonPropertiesFileName = DEFAULT_PROPERTIES_FILE_NAME;
+
+    public static synchronized void setSingletonPropertiesFileName(String fileName) {
+        if (INSTANCE == null) {
+            synchronized (Context.class) {
+                singletonPropertiesFileName = fileName;
+            }
+        } else {
+            throw new IllegalStateException("Property file for a singleton may be set only once");
+        }
+    }
+
+    private static Context INSTANCE;
+
+    public static Context getInstance() {
+        if (INSTANCE == null) {
+            synchronized (Context.class) {
+                INSTANCE = new Context(singletonPropertiesFileName);
+            }
+        }
+
+        return INSTANCE;
+    }
+
+
+    private Context(String propertiesFileName) {
         this.propertiesFileName = propertiesFileName;
         initInstanceContainer();
     }
 
-    public Context() {
-        this.propertiesFileName = DEFAULT_PROPERTIES_FILE_NAME;
-        initInstanceContainer();
-    }
-
-
     @Override
-    public void close() throws Exception {
+    public void close() {
         instanceContainer
                 .entrySet()
                 .stream()
@@ -58,6 +83,7 @@ public class Context implements AutoCloseable {
                         throw new RuntimeException(ex);
                     }
                 });
+        instanceContainer.clear();
     }
 
     /**
@@ -84,11 +110,33 @@ public class Context implements AutoCloseable {
     private void initInstanceContainer() {
         putInstanceOf(Hasher.class, new BCryptHasher());
         putInstanceOf(ConnectionPool.class, new ConnectionPoolImpl(propertiesFileName));
+
+        configureDataSource();
+
         putCache();
         putValidators();
         putDAOs();
         putMappers();
         putServices();
+    }
+
+    private void configureDataSource() {
+        Properties properties = PropertiesUtil.newPropertiesFromYaml("dataSource", propertiesFileName, Context.class.getClassLoader());
+        Object executeOnStartUpProperty = properties.get("executeOnStartUp");
+        if (executeOnStartUpProperty instanceof List<?> scriptsOnStartUp
+                && !scriptsOnStartUp.isEmpty()) {
+            try (Connection connection = this.getByClass(ConnectionPool.class).getConnection()) {
+                ClassLoader resourceLoader = Context.class.getClassLoader();
+                for (Object scriptPath : scriptsOnStartUp) {
+                    System.out.println(scriptPath);
+                    try (Reader reader = new InputStreamReader(resourceLoader.getResourceAsStream((String) scriptPath))) {
+                        SQLScriptRunner.runScript(connection, reader);
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void putServices() {
@@ -117,12 +165,12 @@ public class Context implements AutoCloseable {
     private void putCache() {
         CacheConfig cacheConfig;
         try {
-            cacheConfig = new CacheConfig(PropertiesUtil.newPropertiesFromYaml("dao.cache", propertiesFileName));
+            cacheConfig = new CacheConfig(PropertiesUtil.newPropertiesFromYaml("dao.cache", propertiesFileName, Context.class.getClassLoader()));
         } catch (Throwable t) {
             cacheConfig = new CacheConfig();
         }
 
-        log.info("Cache type: " + cacheConfig.getType()+", capacity: " + cacheConfig.getCapacity());
+        log.info("Cache type: " + cacheConfig.getType() + ", capacity: " + cacheConfig.getCapacity());
 
         Cache cache = switch (cacheConfig.getType()) {
             case LRU -> new LRUCache(cacheConfig.getCapacity());
