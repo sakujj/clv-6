@@ -21,7 +21,7 @@ public class ConnectionPoolImpl implements ConnectionPool {
      */
     public ConnectionPoolImpl(String propertiesFileName) {
         this.propertiesFileName = propertiesFileName;
-        Properties properties = PropertiesUtil.newPropertiesFromYaml("dataSource", propertiesFileName);
+        Properties properties = PropertiesUtil.newPropertiesFromYaml("dataSource.hikari", propertiesFileName, ConnectionPoolImpl.class.getClassLoader());
         dataSource = newHikariDataSource(properties);
     }
 

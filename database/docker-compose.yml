@@ -1,12 +1,4 @@
 services:
-  postgres:
-    container_name: sakujj_postgres_cache
-    build: .
-    ports:
-      - 127.0.0.1:5432:5432
-    volumes:
-      - sakujj_pg_data_cache:/var/lib/postgresql/data
-
   postgres-test:
     container_name: sakujj_postgres_cache_test
     build:
@@ -17,5 +9,4 @@ services:
       - sakujj_pg_data_cache_test:/var/lib/postgresql/data
 
 volumes:
-  sakujj_pg_data_cache:
   sakujj_pg_data_cache_test:

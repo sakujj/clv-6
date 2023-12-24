@@ -1,7 +1,6 @@
 package unit.pdf;
 
-import by.sakujj.pdf.ReportPDF;
-import by.sakujj.pdf.ReportPDFPrinter;
+import by.sakujj.pdf.ReportWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
@@ -9,15 +8,17 @@ import com.itextpdf.kernel.pdf.canvas.parser.listener.SimpleTextExtractionStrate
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import util.ReportPDFTestBuilder;
+import util.ReportTestBuilder;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ReportPDFPrinterTests {
+public class ReportWriterTests {
 
     private static final String BACKGROUND_PDF_PATH = "pdf-resources/Clevertec_Template.pdf";
     private static final String OUTPUT_FOLDER_PATH = "pdf-output-for-tests-ReportPDFPrinterTests";
@@ -49,20 +50,24 @@ public class ReportPDFPrinterTests {
     }
 
     @Test
-    void shouldCreatePDF() {
+    void shouldCreatePDF() throws FileNotFoundException {
         // given
-        ReportPDF report = ReportPDFTestBuilder.aReportPDF().build();
+
         String documentSavePath = OUTPUT_FOLDER_PATH
                 + "/"
                 + "shouldCreatePDF-"
                 + LocalDateTime.MIN
                 + ".pdf";
 
+        ReportTestBuilder aReport = ReportTestBuilder.aReport();
+
         // when
-        ReportPDFPrinter.printToPDF(
-                report,
+        ReportWriter.writePDF(
+                aReport.getTitle(),
+                aReport.getReportTables(),
+                aReport.getConfig(),
                 BACKGROUND_PDF_PATH,
-                documentSavePath);
+                new FileOutputStream(documentSavePath));
 
         // then
         File printedReport = new File(documentSavePath);
@@ -72,16 +77,21 @@ public class ReportPDFPrinterTests {
     @Test
     void shouldContainContentThatWasIntendedToBePrinted() throws IOException {
         // given
-        ReportPDF report = ReportPDFTestBuilder.aReportPDF().build();
         String documentSavePath = OUTPUT_FOLDER_PATH
                 + "/"
                 + "shouldContainContentThatWasIntendedToBePrinted-"
                 + LocalDateTime.MIN
                 + ".pdf";
-        ReportPDFPrinter.printToPDF(
-                report,
+
+        ReportTestBuilder aReport = ReportTestBuilder.aReport();
+
+        ReportWriter.writePDF(
+                aReport.getTitle(),
+                aReport.getReportTables(),
+                aReport.getConfig(),
                 BACKGROUND_PDF_PATH,
-                documentSavePath);
+                new FileOutputStream(documentSavePath));
+
         PdfDocument pdfDocument = null;
         StringBuilder containedText = new StringBuilder();
         int numberOfPages = -1;
@@ -103,12 +113,14 @@ public class ReportPDFPrinterTests {
         }
 
         // then
-        for (int i = 0; i < report.getReportInfoList().size(); i++) {
-            String expectedReportInfo = report.getReportInfoList().get(i);
+        for (int i = 0; i < aReport.getReportTables().size(); i++) {
+            var expectedTableInfo = aReport.getReportTables().get(i);
             final String actualText = containedText.toString();
-            expectedReportInfo
-                    .lines()
-                    .forEach(expectedLine -> assertThat(actualText).contains(expectedLine));
+            expectedTableInfo
+                    .forEach(entry -> {
+                        assertThat(actualText).contains(entry.getKey());
+                        assertThat(actualText).contains(entry.getValue());
+                    });
         }
         for (int i = 1; i <= numberOfPages; i++) {
             String expectedPageNumber = String.valueOf(i);

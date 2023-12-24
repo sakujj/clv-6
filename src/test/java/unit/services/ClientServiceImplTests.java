@@ -328,7 +328,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.save(ClientTestBuilder.aClient().buildRequest()))
-                    .isInstanceOf(ConnectionPoolException.class);
+                    .isInstanceOf(DAOException.class);
         }
     }
 
@@ -403,7 +403,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.updateById(aClient.getId(), aClient.buildRequest()))
-                    .isInstanceOf(ConnectionPoolException.class);
+                    .isInstanceOf(DAOException.class);
         }
     }
 
@@ -474,7 +474,7 @@ public class ClientServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> clientServiceImpl.deleteById(ClientTestBuilder.aClient().getId()))
-                    .isInstanceOf(ConnectionPoolException.class);
+                    .isInstanceOf(DAOException.class);
         }
     }
 

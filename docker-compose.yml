@@ -1,0 +1,27 @@
+services:
+  app:
+    container_name: servlets-task-sakujj
+    build:
+      dockerfile: ./Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - 127.0.0.1:80:8080
+    networks:
+      - webnet
+
+  postgres:
+    container_name: postgres-task-servlets-sakujj
+    build:
+      context: ./database
+    networks:
+      - webnet
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+
+networks:
+  webnet:
+
+volumes:
+  pg_data:

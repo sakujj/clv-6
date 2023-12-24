@@ -4,4 +4,4 @@ ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD postgres
 ENV POSTGRES_DB sakujj_db
 
-COPY ddl.sql dml1.sql /docker-entrypoint-initdb.d/
+#COPY ../src/main/resources/database-init/ddl.sql dml1.sql /docker-entrypoint-initdb.d/

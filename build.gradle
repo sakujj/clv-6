@@ -2,10 +2,18 @@ plugins {
     id 'java'
     id "io.freefair.lombok" version "6.5.1"
     id 'application'
+    id 'war'
 }
 
 group = 'org.example'
-version = '1.0-SNAPSHOT'
+
+application {
+    mainClass = "by.sakujj.Main"
+}
+
+war {
+    archiveBaseName = "task-servlets"
+}
 
 java {
     toolchain {
@@ -23,19 +31,17 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'org.mindrot:jbcrypt:0.4'
-    implementation 'ch.qos.logback:logback-classic:1.4.11'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
     implementation 'org.postgresql:postgresql:42.6.0'
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
     implementation 'jakarta.el:jakarta.el-api:5.0.1'
     implementation 'org.glassfish:jakarta.el:5.0.0-M1'
     implementation 'com.google.code.gson:gson:2.10.1'
-
-
-    // https://mvnrepository.com/artifact/com.itextpdf/itext-core
+    implementation 'org.mybatis:mybatis:3.5.15'
     implementation 'com.itextpdf:itext-core:8.0.2'
 
-
-
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    testImplementation 'javax.servlet:javax.servlet-api:4.0.1'
 
     annotationProcessor 'org.hibernate.validator:hibernate-validator-annotation-processor:8.0.1.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'

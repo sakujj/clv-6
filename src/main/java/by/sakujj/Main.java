@@ -3,8 +3,8 @@ package by.sakujj;
 import by.sakujj.context.Context;
 import by.sakujj.dto.ClientRequest;
 import by.sakujj.dto.ClientResponse;
-import by.sakujj.pdf.ClientServiceDecoratedWithReportPDFPrinter;
-import by.sakujj.pdf.ReportPDFConfig;
+import by.sakujj.pdf.ClientServiceDecoratedWithReportWriter;
+import by.sakujj.pdf.ReportConfig;
 import by.sakujj.services.ClientService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        try (Context ctx = new Context()) {
+        try (Context ctx = Context.getInstance()) {
 
             ClientService clientService = ctx.getByClass(ClientService.class);
-            ClientServiceDecoratedWithReportPDFPrinter clientServiceDecoratedWithReportPdfPrinter = new ClientServiceDecoratedWithReportPDFPrinter(clientService,
-                    new ReportPDFConfig(
+            ClientServiceDecoratedWithReportWriter clientServiceDecoratedWithReportWriter = new ClientServiceDecoratedWithReportWriter(clientService,
+                    new ReportConfig(
                             "pdf-resources/fonts/Hack-Bold.ttf",
                             "pdf-resources/fonts/Hack-Regular.ttf"
                     ).setLeftMarginToWidthRatio(1 / 8f)
@@ -36,7 +36,7 @@ public class Main {
 
             System.out.println(
                     findById(UUID.fromString("99c0ae88-7acd-4cda-9d59-50e09eede81f"),
-                            clientServiceDecoratedWithReportPdfPrinter)
+                            clientServiceDecoratedWithReportWriter)
             );
 
 //            System.out.println(
@@ -47,7 +47,7 @@ public class Main {
 //                                "notHashedPassword": "1111",
 //                                "age": 23
 //                            }
-//                            """, clientServiceDecoratedWithReportPdfPrinter, ctx)
+//                            """, clientServiceDecoratedWithReportWriter, ctx)
 //            );
 //
 //            System.out.println(
@@ -61,19 +61,19 @@ public class Main {
 //                                         "age": 45
 //                                    }
 //                                    """
-//                            , clientServiceDecoratedWithReportPdfPrinter, ctx)
+//                            , clientServiceDecoratedWithReportWriter, ctx)
 //            );
 //            System.out.println("\t\t\t(!)(!)(!)");
 //
 //            System.out.println(
 //                    deleteById(
 //                            UUID.fromString("0673979e-3456-4516-a4c9-f9187c471b1b"),
-//                            clientServiceDecoratedWithReportPdfPrinter)
+//                            clientServiceDecoratedWithReportWriter)
 //            );
 //            System.out.println("\t\t\t(!)(!)(!)");
-//
+
             System.out.println(
-                    findAll(clientServiceDecoratedWithReportPdfPrinter)
+                    findAll(clientServiceDecoratedWithReportWriter)
             );
 
         }

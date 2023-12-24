@@ -1,15 +1,14 @@
-<h2>Task 6 - ReflectionAPI</h2>
-<p> <i>"docker-compose.yml"</i> для тестовой и обычной базы данных находится в папке
-<i>"./database"</i></p>
-<p >Реализованы LFU, LRU кеши, используются вместе с dynamic interface proxy и аннотацией @Cacheable.
-Реализованы DAO, Mapper, Service для сущности Client и соответстующих DTO. Для отправки
-json файлов используется Main класс и находящиеся в нем методы. Имеются интеграционные
-тесты для DAO и юнит тесты для некоторых других классов.</p>
-
-<h2>Task 8 - Patterns</h2>
-<p>Использован паттерн "Декоратор" для добаления функциональности распечатывания
-отчетов, по операциям с бд. Объекты RuntimeException, выбрасывающиеся прежде, заменены на 
-кастомные исключения наследующиеся от RuntimeException, такие как: 
-DAOException, ConnectionPoolException, PDFException. При написании тестов используется
-паттерн "TestBuilder", позволяющий получать объекты желаемых классов заранее сконфигурированными
-стандартным образом и позволяющий удобно изменять неустраивающие части стандартной конфигурации.</p>
+<h2>Tasks servlets</h2>
+<p>Для запуска всего приложения без тестов: <code>docker compose up</code></p>
+<p>Для запуска юнит тестов: запустить тесты в <code>src/test/java/unit</code></p>
+<p>Для запуска юнит и интеграционных тестов: 
+    <ol>
+    <li><code>cd ./database</code></li>
+    <li><code>docker compose up</code> (Поднимаем тестовую БД)</li>
+    <li><code>cd ..</code></li>
+    <li><code>./gradlew test</code></li>
+    </ol>
+</p>
+<p>Адрес приложения: http://localhost:80/task-servlets</p>
+<p>Адрес REST API: http://localhost:80/task-servlets/api/1/clients</p>
+<p>Адрес PDF: http://localhost:80/task-servlets/pdf/clients</p>
