@@ -1,11 +1,11 @@
 package unit.servlet;
 
-import by.sakujj.context.Context;
 import by.sakujj.dto.ClientResponse;
 import by.sakujj.pdf.ReportConfig;
 import by.sakujj.pdf.ReportWriter;
 import by.sakujj.pdf.TableBuilder;
 import by.sakujj.services.ClientService;
+import by.sakujj.servlet.ClientsByIdServlet;
 import by.sakujj.servlet.ClientsPDFServlet;
 import by.sakujj.servlet.util.ClientsServletUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +16,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.ReflectionUtils;
 import util.ClientTestBuilder;
 
 import javax.servlet.ServletException;
@@ -33,8 +34,7 @@ import static by.sakujj.util.HttpStatusCode.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientsPDFServletTests {
-    @Mock
-    private Context context;
+
     @Mock
     private ClientService clientService;
     @Mock
@@ -44,26 +44,20 @@ public class ClientsPDFServletTests {
     @Mock
     private ServletOutputStream servletOutputStream;
 
+    @Mock
     private ReportConfig reportConfig;
     @Spy
     private ClientsPDFServlet clientsPDFServlet;
 
     @BeforeEach
-    void beforeEach() throws ServletException, NoSuchFieldException, IllegalAccessException {
-        try (MockedStatic<Context> mockedStatic = Mockito.mockStatic(Context.class)) {
+    void beforeEach() {
+        clientsPDFServlet = new ClientsPDFServlet();
 
-            mockedStatic.when(Context::getInstance)
-                    .thenReturn(context);
+        Field clientServiceField = ReflectionUtils.findField(ClientsByIdServlet.class, "clientService");
+        Field configField = ReflectionUtils.findField(ClientsByIdServlet.class, "config");
 
-            Mockito.when(context.getByClass(ClientService.class))
-                    .thenReturn(clientService);
-
-            clientsPDFServlet.init();
-
-            Field configField = ClientsPDFServlet.class.getDeclaredField("config");
-            configField.setAccessible(true);
-            reportConfig = (ReportConfig) configField.get(clientsPDFServlet);
-        }
+        ReflectionUtils.setField(clientServiceField, clientsPDFServlet, clientService);
+        ReflectionUtils.setField(configField, clientsPDFServlet, reportConfig);
     }
 
     @Test
@@ -126,7 +120,6 @@ public class ClientsPDFServletTests {
 
         try (MockedStatic<ClientsServletUtil> mockedStaticClientsServletUtil = Mockito.mockStatic(ClientsServletUtil.class);
              MockedStatic<ReportWriter> mockedStaticReportWriter = Mockito.mockStatic(ReportWriter.class);
-             MockedStatic<TableBuilder> mockedStaticTableBuilder = Mockito.mockStatic(TableBuilder.class)
         ) {
             Mockito.when(request.getRequestURI())
                     .thenReturn(reqURI);

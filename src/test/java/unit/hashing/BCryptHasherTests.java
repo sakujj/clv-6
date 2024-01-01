@@ -1,8 +1,7 @@
 package unit.hashing;
 
-import by.sakujj.context.Context;
+import by.sakujj.hashing.BCryptHasher;
 import by.sakujj.hashing.Hasher;
-import integration.context.TestContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -10,9 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class BCryptHasherTests {
-    private static final Context context = TestContext.getInstance();
 
-    Hasher hasher = context.getByClass(Hasher.class);
+    Hasher hasher = new BCryptHasher();
 
     @ParameterizedTest
     @ValueSource(strings = {"pass1", "qwertyzxcv32432@@", "s"})

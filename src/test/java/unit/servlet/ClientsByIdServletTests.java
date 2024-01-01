@@ -1,6 +1,5 @@
 package unit.servlet;
 
-import by.sakujj.context.Context;
 import by.sakujj.dto.ClientRequest;
 import by.sakujj.dto.ClientResponse;
 import by.sakujj.services.ClientService;
@@ -12,14 +11,18 @@ import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.ReflectionUtils;
 import util.ClientTestBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,8 +33,6 @@ import static by.sakujj.util.HttpStatusCode.OK;
 @ExtendWith(MockitoExtension.class)
 public class ClientsByIdServletTests {
     @Mock
-    private Context context;
-    @Mock
     private ClientService clientService;
     @Mock
     private Validator validator;
@@ -39,28 +40,24 @@ public class ClientsByIdServletTests {
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
-
+    @Mock
     private Gson gson;
-    @Spy
+
     private ClientsByIdServlet clientsByIdServlet;
 
     @BeforeEach
-    void beforeEach() throws ServletException {
-        try (MockedStatic<Context> mockedStatic = Mockito.mockStatic(Context.class);
-             MockedConstruction<Gson> mockedConstruction = Mockito.mockConstruction(Gson.class)) {
+    void beforeEach() {
+        clientsByIdServlet = new ClientsByIdServlet();
 
-            mockedStatic.when(Context::getInstance)
-                    .thenReturn(context);
+        Field validatorField = ReflectionUtils.findField(ClientsByIdServlet.class, "validator");
+        Field clientServiceField = ReflectionUtils.findField(ClientsByIdServlet.class, "clientService");
+        Field gsonField = ReflectionUtils.findField(ClientsByIdServlet.class, "gson");
 
-            Mockito.when(context.getByClass(Validator.class))
-                    .thenReturn(validator);
-            Mockito.when(context.getByClass(ClientService.class))
-                    .thenReturn(clientService);
-
-            clientsByIdServlet.init();
-            gson = mockedConstruction.constructed().get(0);
-        }
+        ReflectionUtils.setField(validatorField, clientsByIdServlet, validator);
+        ReflectionUtils.setField(clientServiceField, clientsByIdServlet, clientService);
+        ReflectionUtils.setField(gsonField, clientsByIdServlet, gsonField);
     }
+
 
     @Test
     void shouldWriteClientToGETResponse() throws ServletException, IOException {

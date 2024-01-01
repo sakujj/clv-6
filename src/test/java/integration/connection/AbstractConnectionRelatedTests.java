@@ -1,23 +1,25 @@
 package integration.connection;
 
+import by.sakujj.config.SpringConfig;
 import by.sakujj.connection.ConnectionPool;
-import by.sakujj.context.Context;
 import by.sakujj.exceptions.DAOException;
-import integration.context.TestContext;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = SpringConfig.class)
 public class AbstractConnectionRelatedTests {
-    private static final Context context = TestContext.getInstance();
-
-
-    private static final ConnectionPool connectionPool
-            = context.getByClass(ConnectionPool.class);
+    @Autowired
+    private ConnectionPool connectionPool;
 
     private boolean doRollback = false;
 

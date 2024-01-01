@@ -1,12 +1,13 @@
 package by.sakujj.servlet;
 
-import by.sakujj.context.Context;
+import by.sakujj.context.AppContext;
 import by.sakujj.dto.ClientResponse;
 import by.sakujj.pdf.ReportConfig;
 import by.sakujj.pdf.ReportWriter;
 import by.sakujj.pdf.TableBuilder;
 import by.sakujj.services.ClientService;
 import by.sakujj.servlet.util.ClientsServletUtil;
+import org.springframework.context.ApplicationContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,29 +24,16 @@ import static by.sakujj.util.HttpStatusCode.*;
 @WebServlet("/pdf/clients/*")
 public class ClientsPDFServlet extends HttpServlet {
     public static final String BASE_URI = "/pdf/clients/";
-    private static final String BOLD_FONT_PATH = "pdf-resources/fonts/Hack-Bold.ttf";
-    private static final String REGULAR_FONT_PATH = "pdf-resources/fonts/Hack-Regular.ttf";
-    private static final float RIGHT_MARGIN_TO_WIDTH_RATIO = 1 / 8f;
-    private static final float LEFT_MARGIN_TO_WIDTH_RATIO = 1 / 8f;
-    private static final float TOP_MARGIN_TO_WIDTH_RATIO = 1 / 6f;
-    private static final float BOTTOM_MARGIN_TO_WIDTH_RATIO = 1 / 8f;
     private static final String BACKGROUND_PDF_PATH = "pdf-resources/Clevertec_Template.pdf";
 
     private ClientService clientService;
     private ReportConfig config;
 
     @Override
-    public void init() {
-        config = new ReportConfig(
-                BOLD_FONT_PATH,
-                REGULAR_FONT_PATH
-        ).setTopMarginToHeightRatio(TOP_MARGIN_TO_WIDTH_RATIO)
-                .setRightMarginToWidthRatio(RIGHT_MARGIN_TO_WIDTH_RATIO)
-                .setLeftMarginToWidthRatio(LEFT_MARGIN_TO_WIDTH_RATIO)
-                .setBottomMarginToHeightRatio(BOTTOM_MARGIN_TO_WIDTH_RATIO);
-        Context context = Context.getInstance();
-
-        clientService = context.getByClass(ClientService.class);
+    public void init() throws ServletException {
+        ApplicationContext context = AppContext.getInstance();
+        clientService = context.getBean(ClientService.class);
+        config = context.getBean(ReportConfig.class);
     }
 
     @Override

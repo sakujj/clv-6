@@ -5,6 +5,8 @@ services:
       dockerfile: ./Dockerfile
     depends_on:
       - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 127.0.0.1:80:8080
     networks:
