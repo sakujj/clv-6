@@ -1,16 +1,15 @@
 package by.sakujj.servlet;
 
-import by.sakujj.context.Context;
+import by.sakujj.context.AppContext;
 import by.sakujj.dto.ClientRequest;
 import by.sakujj.dto.ClientResponse;
 import by.sakujj.services.ClientService;
 import by.sakujj.servlet.error.ApiError;
 import by.sakujj.servlet.util.ClientsServletUtil;
-import by.sakujj.servlet.util.InstantAdapter;
 import by.sakujj.servlet.util.ServletUtil;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import jakarta.validation.Validator;
+import org.springframework.context.ApplicationContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,6 +31,14 @@ public class ClientsServlet extends HttpServlet {
     private Validator validator;
     private Gson gson;
 
+    @Override
+    public void init() throws ServletException {
+        ApplicationContext context = AppContext.getInstance();
+        clientService = context.getBean(ClientService.class);
+        validator = context.getBean(Validator.class);
+        gson = context.getBean(Gson.class);
+    }
+
     private static final String EMAIL_REGEX = "[a-zA-Z0-9]{3,}@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+";
     public static final String EMAIL_PARAMETER_NAME = "email";
     public static final String PAGE_PARAMETER_NAME = "page";
@@ -39,17 +46,6 @@ public class ClientsServlet extends HttpServlet {
 
     public static final int DEFAULT_PAGE_SIZE = 20;
 
-
-    @Override
-    public void init() throws ServletException {
-        Context context = Context.getInstance();
-
-        clientService = context.getByClass(ClientService.class);
-        validator = context.getByClass(Validator.class);
-        gson = new GsonBuilder()
-                .registerTypeAdapter(Instant.class, new InstantAdapter())
-                .create();
-    }
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

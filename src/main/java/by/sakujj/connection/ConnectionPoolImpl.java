@@ -1,7 +1,6 @@
 package by.sakujj.connection;
 
 import by.sakujj.exceptions.ConnectionPoolException;
-import by.sakujj.util.PropertiesUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -16,16 +15,11 @@ import java.util.Properties;
 public class ConnectionPoolImpl implements ConnectionPool {
     private final HikariDataSource dataSource;
 
-    /**
-     * @param propertiesFileName fileName to get configuration properties from
-     */
-    public ConnectionPoolImpl(String propertiesFileName) {
-        this.propertiesFileName = propertiesFileName;
-        Properties properties = PropertiesUtil.newPropertiesFromYaml("dataSource.hikari", propertiesFileName, ConnectionPoolImpl.class.getClassLoader());
+
+    public ConnectionPoolImpl(Properties properties) {
         dataSource = newHikariDataSource(properties);
     }
 
-    private final String propertiesFileName;
 
     private static HikariDataSource newHikariDataSource(Properties properties) {
         HikariConfig hikariConfig = new HikariConfig(properties);
@@ -53,6 +47,6 @@ public class ConnectionPoolImpl implements ConnectionPool {
     @Override
     public void close() {
         dataSource.close();
-        log.info("CP associated with '%s' has been closed".formatted(propertiesFileName));
+        log.info("CP has been closed");
     }
 }

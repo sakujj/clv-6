@@ -10,6 +10,9 @@ import by.sakujj.mappers.ClientMapper;
 import by.sakujj.model.Client;
 import by.sakujj.services.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,10 +20,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
+    @Autowired
     private final ClientDAO clientDAO;
+    @Autowired
     private final ClientMapper clientMapper;
+    @Autowired
     private final ConnectionPool connectionPool;
 
     /**

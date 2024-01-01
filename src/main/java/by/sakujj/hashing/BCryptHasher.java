@@ -2,7 +2,9 @@ package by.sakujj.hashing;
 
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class BCryptHasher implements Hasher{
     private final static int LOG_ROUNDS = 10;

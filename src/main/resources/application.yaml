@@ -1,3 +1,5 @@
+fileName: "application.yaml"
+
 dataSource:
   hikari:
     driverClassName: "org.postgresql.Driver"
